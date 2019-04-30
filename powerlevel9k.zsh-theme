@@ -1855,9 +1855,19 @@ local NEWLINE='
   [[ $ITERM_SHELL_INTEGRATION_INSTALLED == "Yes" ]] && PROMPT="%{$(iterm2_prompt_mark)%}$PROMPT"
 }
 
-zle-keymap-select () {
-	zle reset-prompt
-	zle -R
+function zle-keymap-select zle-line-init {
+  if [[ ${KEYMAP} == vicmd ]] ||
+     [[ $1 = 'block' ]]; then
+    echo -ne '\e[1 q'
+
+  elif [[ ${KEYMAP} == main ]] ||
+       [[ ${KEYMAP} == viins ]] ||
+       [[ ${KEYMAP} = '' ]] ||
+       [[ $1 = 'beam' ]]; then
+    echo -ne '\e[5 q'
+  fi
+  zle reset-prompt
+  zle -R
 }
 
 set_default POWERLEVEL9K_IGNORE_TERM_COLORS false
@@ -1937,4 +1947,5 @@ prompt_powerlevel9k_teardown() {
   RPROMPT=
 }
 
+zle -N zle-keymap-init
 prompt_powerlevel9k_setup "$@"
